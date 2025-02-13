@@ -1,5 +1,9 @@
 import java.util.*;
 
+enum Grade{
+    A,B,C,D,F
+}
+
 public class Grading {
     public static void main(String[] args) {
         int time = 3;
@@ -30,9 +34,9 @@ public class Grading {
     static String Checker(int result){
 
         if(result >= 80){
-            return "A";
+            return ""+Grade.A;
         }else if (result >=75) {
-            return "B+";
+            return ""+Grade.B+"+";
         }else if (result >=70) {
             return "B";
         }else if (result >=65) {
