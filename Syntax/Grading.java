@@ -15,6 +15,8 @@ public class Grading {
                 int n = kb.nextInt();
                 li.add(n);
             }
+
+            // System.out.println(li.get(1)); // access to List(Array) index
     
             for (int x : li) {
                 result += x;
