@@ -1,5 +1,9 @@
 enum Grade {
-    A(4.0, "Very Good"),B(3.0, "Good Job"),C(2.0, "Not Bad"),D(1.0, "Keep it up!"),F(0.0, "Not today T-T");
+    A(4.0, "Genius"),
+    B(3.0, "Very Good"),
+    C(2.0, "Good"),
+    D(1.0, "Not Bad"),
+    F(0.0, "Fail");
 
     private Grade(double p, String cm){
         this.point = p;
