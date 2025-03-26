@@ -1,5 +1,7 @@
 public class BasicConcept {
       public static void main(String[] args) {
+
+        //object creation from class
         Car myCar = new Car();
         myCar.brand = "Toyota";
         myCar.color = "White";
@@ -9,6 +11,7 @@ public class BasicConcept {
       }  
 }
 
+// class
 class Car {
     // Attributes
     String brand;
