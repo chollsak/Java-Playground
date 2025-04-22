@@ -4,6 +4,9 @@ public class Employee {
     private String name;
     private Double salary;
 
+    // Static Attribute
+    static int minSalary = 20000;
+
     // Default Constructor
     public Employee(){
 

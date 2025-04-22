@@ -8,5 +8,7 @@ public class main {
         e1.showData();
         e2.showData();
         e3.showData();
+
+        System.out.println(e1.minSalary);
     }
 }
