@@ -1,44 +1,67 @@
 package com.chollsak.demo.services;
 
-import com.chollsak.demo.daos.UserDAO;
+import com.chollsak.demo.dtos.CustomerDTO;
+import com.chollsak.demo.dtos.CustomerRequestDTO;
+import com.chollsak.demo.entities.Customer;
+import com.chollsak.demo.entities.User;
+import com.chollsak.demo.enums.Role;
+import com.chollsak.demo.repositories.UserRepository;
 import com.chollsak.demo.dtos.UserDTO;
-import com.chollsak.demo.dtos.UserRequestDTO;
-import com.chollsak.demo.models.UserModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 
+@Slf4j
 @Service
 public class UserService {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserRepository userRepository;
 
-    public List<UserDTO> getAllUser(){
-        return userDAO.getUsers().stream().map(user -> new UserDTO(user.getId(),user.getName(),user.getEmail(),user.getAge())).toList();
-    }
+    @Autowired
+    private CustomerService customerService;
 
-    public UserDTO getUserById(String id){
-        return userDAO.getUsers().stream().filter(user -> user.getId().equals(id)).map(user -> new UserDTO(user.getId(),user.getName(),user.getEmail(),user.getAge())).findFirst().orElse(null);
-    }
-
-    public UserDTO createUser(String name, String email, int age){
-        UserModel user = userDAO.addUser(new UserModel(name, email, age));
-        return getUserById(user.getId());
-    }
-
-    public String deleteUserById(String id){
-        UserModel userToDelete = userDAO.getUsers().stream().filter(user -> user.getId().equals(id)).findFirst().orElse(null);
-        if(userToDelete != null){
-            userDAO.removeUser(userToDelete);
-            return "User deleted";
+    public UserDTO createUser(String email, Role role){
+        log.info("Create user");
+        User userToFind = findUserByEmail(email);
+        if(userToFind != null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Users already exist");
         }
-        return "User not found";
+
+        User user = new User();
+        user.setEmail(email);
+        user.setRole(role);
+
+        User savedUser = userRepository.save(user);
+        CustomerRequestDTO customer = new CustomerRequestDTO();
+        customer.setUser_id(savedUser.getId());
+        CustomerDTO savedCustomer = customerService.createCustomer(customer);
+
+        return new UserDTO(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
     }
 
-    public String updateUserById(String id, UserRequestDTO userRequestDTO){
-        UserModel userToUpdate = new UserModel(id, userRequestDTO.getName(), userRequestDTO.getEmail(), userRequestDTO.getAge());
-        return userDAO.updateUser(userToUpdate);
+    public User findUserByEmail(String email){
+        log.info("Find user by email");
+        User user = userRepository.findByEmail(email).orElse(null);
+        return user;
     }
+
+    public UserDTO getUserById(Long id){
+        User user = userRepository.findById(id).orElse(null);
+        return new UserDTO(user.getId(), user.getEmail(),user.getRole());
+    }
+
+//    public List<UserDTO> getAllUser(){
+//        log.info("Get all users");
+//        List <UserDTO> users = userRepository.findAll().stream()
+//                .map(user -> new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getAge()))
+//                .toList();
+//        log.info("Found {} users",users.size());
+//        return users;
+//    }
+
+
 }

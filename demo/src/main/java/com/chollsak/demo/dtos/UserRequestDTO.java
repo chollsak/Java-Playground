@@ -1,29 +1,22 @@
 package com.chollsak.demo.dtos;
 
+import com.chollsak.demo.enums.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRequestDTO {
-    private String name;
+    @NotBlank(message = "Email is required.")
+    @Email(message = "Email should be valid")
     private String email;
-    private int age;
-    public UserRequestDTO(){
 
-    }
+    private Role role = Role.CUSTOMER;
 
-    public UserRequestDTO(String name, String email, int age){
-        this.name = name;
-        this.email = email;
-        this.age = age;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public int getAge() {
-        return age;
+    public void setRole(Role role){
+        this.role = (role != null) ? role : Role.CUSTOMER;
     }
 
 }

@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore configuration files
+application.properties
+docker-compose.yml
