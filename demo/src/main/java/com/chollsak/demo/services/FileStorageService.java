@@ -2,7 +2,6 @@ package com.chollsak.demo.services;
 
 import io.minio.*;
 import io.minio.http.Method;
-
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
@@ -40,7 +39,7 @@ public class FileStorageService {
     }
 
     public String uploadProfileImage(MultipartFile file, Long customerId) {
-        validateFile(file);
+        validateFile(file, 5); // 5MB limit for profiles
 
         try {
             String originalFilename = file.getOriginalFilename();
@@ -63,7 +62,87 @@ public class FileStorageService {
         }
     }
 
-    private void validateFile(MultipartFile file) {
+    // Upload product image with product-specific validation
+    public String uploadProductImage(MultipartFile file, Long productId) {
+        validateProductImageFile(file);
+
+        try {
+            String originalFilename = file.getOriginalFilename();
+            String extension = getFileExtension(originalFilename);
+            String objectKey = "products/" + productId + "_" + System.currentTimeMillis() + extension;
+
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+
+            return objectKey;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload product image: " + e.getMessage(), e);
+        }
+    }
+
+    // Upload multiple product images
+    public List<String> uploadProductImages(List<MultipartFile> files, Long productId) {
+        return files.stream()
+                .filter(file -> !file.isEmpty())
+                .map(file -> uploadProductImage(file, productId))
+                .collect(Collectors.toList());
+    }
+
+    // Generic upload method for any file with custom object key
+    public String uploadFile(MultipartFile file, String objectKey) {
+        validateFile(file, 10); // 10MB limit for generic files
+
+        try {
+            minioClient.putObject(
+                    PutObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .stream(file.getInputStream(), file.getSize(), -1)
+                            .contentType(file.getContentType())
+                            .build()
+            );
+
+            return objectKey;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload file: " + objectKey, e);
+        }
+    }
+
+    // Method to get file URL for viewing
+    public String getFileUrl(String objectKey) {
+        try {
+            return minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(bucketName)
+                            .object(objectKey)
+                            .expiry(60 * 60 * 24) // 24 hours
+                            .build()
+            );
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get file URL: " + objectKey, e);
+        }
+    }
+
+    // Get product image URL with product-specific error handling
+    public String getProductImageUrl(String imagePath) {
+        try {
+            return getFileUrl(imagePath);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get product image URL: " + imagePath, e);
+        }
+    }
+
+    // Validate generic files
+    private void validateFile(MultipartFile file, int maxSizeMB) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("File is empty");
         }
@@ -72,8 +151,24 @@ public class FileStorageService {
             throw new IllegalArgumentException("Invalid file type. Only images allowed.");
         }
 
-        if (file.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException("File size exceeds 5MB limit");
+        if (file.getSize() > maxSizeMB * 1024 * 1024) {
+            throw new IllegalArgumentException("File size exceeds " + maxSizeMB + "MB limit");
+        }
+    }
+
+    // Validate product image files with higher limits
+    private void validateProductImageFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Product image file is empty");
+        }
+
+        if (!isValidImageType(file.getContentType())) {
+            throw new IllegalArgumentException("Invalid file type. Only images allowed for products.");
+        }
+
+        // 15MB limit for product images
+        if (file.getSize() > 15 * 1024 * 1024) {
+            throw new IllegalArgumentException("Product image file size exceeds 15MB limit");
         }
     }
 
@@ -132,6 +227,38 @@ public class FileStorageService {
         }
     }
 
+    public boolean deleteProductImages(Long productId) {
+        try {
+            // List all objects with the product's image prefix
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs.builder()
+                            .bucket(bucketName)
+                            .prefix("products/" + productId + "_")
+                            .build()
+            );
+
+            boolean deleted = false;
+            for (Result<Item> result : results) {
+                Item item = result.get();
+                deleteFile(item.objectName());
+                deleted = true;
+            }
+
+            return deleted;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete product images for product: " + productId, e);
+        }
+    }
+
+    // Delete specific product image files
+    public void deleteProductImageFiles(List<String> imagePaths) {
+        try {
+            deleteMultipleFiles(imagePaths);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete product image files", e);
+        }
+    }
+
     public void deleteMultipleFiles(List<String> objectKeys) {
         try {
             List<DeleteObject> deleteObjects = objectKeys.stream()
@@ -151,6 +278,4 @@ public class FileStorageService {
             throw new RuntimeException("Failed to delete multiple files", e);
         }
     }
-
-    // Your existing getFileUrl and deleteFile methods remain the same
 }

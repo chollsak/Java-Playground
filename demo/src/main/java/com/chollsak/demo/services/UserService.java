@@ -1,5 +1,6 @@
 package com.chollsak.demo.services;
 
+import com.chollsak.demo.dtos.AdminDTO;
 import com.chollsak.demo.dtos.CustomerDTO;
 import com.chollsak.demo.dtos.CustomerRequestDTO;
 import com.chollsak.demo.entities.Customer;
@@ -24,6 +25,9 @@ public class UserService {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private AdminService adminService;
+
     public UserDTO createUser(String email, Role role){
         log.info("Create user");
         User userToFind = findUserByEmail(email);
@@ -34,11 +38,19 @@ public class UserService {
         User user = new User();
         user.setEmail(email);
         user.setRole(role);
-
         User savedUser = userRepository.save(user);
-        CustomerRequestDTO customer = new CustomerRequestDTO();
-        customer.setUser_id(savedUser.getId());
-        CustomerDTO savedCustomer = customerService.createCustomer(customer);
+
+        if(role.equals(Role.CUSTOMER)){
+
+            CustomerRequestDTO customer = new CustomerRequestDTO();
+            customer.setUser_id(savedUser.getId());
+            customerService.createCustomer(customer);
+
+        } else if (role.equals(Role.ADMIN)) {
+            AdminDTO admin = new AdminDTO();
+            admin.setUserId(savedUser.getId());
+            adminService.createAdmin(admin);
+        }
 
         return new UserDTO(savedUser.getId(), savedUser.getEmail(), savedUser.getRole());
     }
