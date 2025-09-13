@@ -5,14 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminDTO {
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
-    private Long userId;
+    private UUID userId;
 
     public AdminDTO(Admin admin){
         this.id = admin.getId();

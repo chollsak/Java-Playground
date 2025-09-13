@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +39,7 @@ public class FileStorageService {
         }
     }
 
-    public String uploadProfileImage(MultipartFile file, Long customerId) {
+    public String uploadProfileImage(MultipartFile file, UUID customerId) {
         validateFile(file, 5); // 5MB limit for profiles
 
         try {
@@ -63,7 +64,7 @@ public class FileStorageService {
     }
 
     // Upload product image with product-specific validation
-    public String uploadProductImage(MultipartFile file, Long productId) {
+    public String uploadProductImage(MultipartFile file, UUID productId) {
         validateProductImageFile(file);
 
         try {
@@ -88,7 +89,7 @@ public class FileStorageService {
     }
 
     // Upload multiple product images
-    public List<String> uploadProductImages(List<MultipartFile> files, Long productId) {
+    public List<String> uploadProductImages(List<MultipartFile> files, UUID productId) {
         return files.stream()
                 .filter(file -> !file.isEmpty())
                 .map(file -> uploadProductImage(file, productId))

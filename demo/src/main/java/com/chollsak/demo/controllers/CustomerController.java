@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @RestController
 public class CustomerController {
     private static final Logger log = LoggerFactory.getLogger(CustomerController.class);
@@ -25,12 +27,12 @@ public class CustomerController {
 
     @PutMapping("/users/customers/{id}")
     public CustomerDTO updateCustomer(@RequestBody CustomerUpdateRequestDTO customerUpdateRequestDTO,
-                                      @PathVariable Long id) {
+                                      @PathVariable UUID id) {
         return customerService.updateCustomer(customerUpdateRequestDTO, null, id);
     }
 
     @PutMapping("/users/customers/{id}/profile-image")
-    public CustomerDTO updateProfileImage(@PathVariable Long id,
+    public CustomerDTO updateProfileImage(@PathVariable UUID id,
                                           @RequestParam("file") MultipartFile file) {
         return customerService.updateCustomer(new CustomerUpdateRequestDTO(), file, id);
     }

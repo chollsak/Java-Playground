@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +27,6 @@ public class CustomerRequestDTO {
     private String profileImgUrl;
 
     @NotBlank(message = "user_id is required.")
-    private Long user_id;
+    private UUID user_id;
 
 }

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class CustomerService {
@@ -39,12 +41,12 @@ public class CustomerService {
         return new CustomerDTO(savedCustomer);
     }
 
-    public Customer getCustomerByUserId(Long id){
+    public Customer getCustomerByUserId(UUID id){
         Customer customer = customerRepository.findByUserId(id).orElse(null);
         return customer;
     }
 
-    public CustomerDTO updateCustomer(CustomerUpdateRequestDTO customerUpdateRequestDTO, MultipartFile profileImage, Long id){
+    public CustomerDTO updateCustomer(CustomerUpdateRequestDTO customerUpdateRequestDTO, MultipartFile profileImage, UUID id){
         Customer customer = customerRepository.findById(id).orElse(null);
         if(customer == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer doesn't exist");
@@ -77,4 +79,5 @@ public class CustomerService {
         Customer savedCustomer = customerRepository.save(customer);
         return new CustomerDTO(savedCustomer);
     }
+
 }

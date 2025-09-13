@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "admins")
@@ -14,8 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Admin {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "firstname")
     private String firstName;
@@ -24,10 +25,10 @@ public class Admin {
     private String lastName;
 
     @Column(name = "user_id")
-    private Long userId;
+    private UUID userId;
 
 
-    public Admin(String firstName, String lastName, Long userId) {
+    public Admin(String firstName, String lastName, UUID userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.userId = userId;

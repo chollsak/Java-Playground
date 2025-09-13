@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 
 @Slf4j
 @Service
@@ -61,7 +63,7 @@ public class UserService {
         return user;
     }
 
-    public UserDTO getUserById(Long id){
+    public UserDTO getUserById(UUID id){
         User user = userRepository.findById(id).orElse(null);
         return new UserDTO(user.getId(), user.getEmail(),user.getRole());
     }

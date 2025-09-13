@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "customers")
@@ -14,8 +15,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "firstname")
     private String firstName;
@@ -35,11 +36,11 @@ public class Customer {
     private String imgPath;
 
     @Column(name = "user_id")
-    private Long userId;
+    private UUID userId;
 
 
     public Customer(String firstName, String lastName, String shopName,
-                    LocalDate dateOfBirth, int points, Long userId) {
+                    LocalDate dateOfBirth, int points, UUID userId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.shopName = shopName;

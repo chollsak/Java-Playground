@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "product_img")
 @Data
@@ -13,17 +15,17 @@ import lombok.NoArgsConstructor;
 public class ProductImg {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(name = "product_id", nullable = false)
-    private Long productId;
+    private UUID productId;
 
     @Column(name = "imgPath", nullable = false)
     private String imgPath;
 
 
-    public ProductImg(Long productId, String imgPath) {
+    public ProductImg(UUID productId, String imgPath) {
         this.productId = productId;
         this.imgPath = imgPath;
     }

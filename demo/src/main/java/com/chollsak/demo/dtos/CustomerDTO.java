@@ -8,20 +8,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
 
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String ShopName;
     private LocalDate dateOfBirth;
     private int point;
     private String profileImgUrl;
-    private Long userId;
+    private UUID userId;
 
     public CustomerDTO(Customer customer){
         this.id = customer.getId();

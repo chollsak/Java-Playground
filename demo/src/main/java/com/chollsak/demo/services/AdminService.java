@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.UUID;
+
 @Service
 public class AdminService {
     @Autowired
@@ -39,7 +41,7 @@ public class AdminService {
 
     }
 
-    public Admin getAdminByUserId(Long id){
+    public Admin getAdminByUserId(UUID id){
         Admin admin = adminRepository.findByUserId(id).orElse(null);
         return admin;
     }
