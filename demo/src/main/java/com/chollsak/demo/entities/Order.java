@@ -27,9 +27,11 @@ public class Order {
     private LocalDateTime orderDate;
 
     @Column(name = "payment_type")
+    @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @Column(name = "comment")
